@@ -18,9 +18,10 @@ export const AuthenticationContextProvider = ({ children }) => {
             })
             .catch((e) => {
                 setIsLoading(false);
-                setError(e.toString());
+                setError(e.toString().split("Firebase:")[1]);
             });
     };
+
     return (
         <AuthenticationContext.Provider
             value={{
