@@ -1,18 +1,15 @@
-import React from "react";
-import { Searchbar } from "react-native-paper";
-import { SafeAreaView, FlatList, StatusBar } from "react-native";
+import React, { useContext } from "react";
+import { FlatList, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
-import { RestaurantInfoCard } from "../components/restaurant-info-card.component";
+import { ActivityIndicator } from "react-native-paper";
+
+import { SafeArea } from "../../../components/utility/safe-area.component";
 import { Spacer } from "../../../components/spacer/spacer.component";
 
-const SafeArea = styled(SafeAreaView)`
-    flex: 1;
-    ${StatusBar.currentHeight && `margin-top: ${StatusBar.currentHeight}px`};
-`;
+import { RestaurantsContext } from "../../../services/restaurants/restaurants.context";
 
-const SearchContainer = styled.View`
-    padding: ${(props) => props.theme.space[3]};
-`;
+import { Search } from "../components/search.component";
+import { RestaurantInfoCard } from "../components/restaurant-info-card.component";
 
 const RestaurantList = styled(FlatList).attrs({
     contentContainerStyle: {
@@ -20,32 +17,42 @@ const RestaurantList = styled(FlatList).attrs({
     },
 })``;
 
-export const RestaurantsScreen = () => {
+const Loading = styled(ActivityIndicator)`
+    margin-left: -25px;
+`;
+const LoadingContainer = styled.View`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+`;
+
+export const RestaurantsScreen = ({ navigation }) => {
+    const { isLoading, restaurants } = useContext(RestaurantsContext);
     return (
         <SafeArea>
-            <SearchContainer>
-                <Searchbar elevation={3} />
-            </SearchContainer>
+            {isLoading && (
+                <LoadingContainer>
+                    <Loading size={50} animating={true} />
+                </LoadingContainer>
+            )}
+            <Search />
             <RestaurantList
-                data={[
-                    { name: 1 },
-                    { name: 2 },
-                    { name: 3 },
-                    { name: 4 },
-                    { name: 5 },
-                    { name: 6 },
-                    { name: 7 },
-                    { name: 8 },
-                    { name: 9 },
-                    { name: 10 },
-                    { name: 11 },
-                    { name: 12 },
-                ]}
-                renderItem={() => (
-                    <Spacer position="bottom" size="large">
-                        <RestaurantInfoCard />
-                    </Spacer>
-                )}
+                data={restaurants}
+                renderItem={({ item }) => {
+                    return (
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate("RestaurantDetail", {
+                                    restaurant: item,
+                                })
+                            }
+                        >
+                            <Spacer position="bottom" size="large">
+                                <RestaurantInfoCard restaurant={item} />
+                            </Spacer>
+                        </TouchableOpacity>
+                    );
+                }}
                 keyExtractor={(item) => item.name}
             />
         </SafeArea>
