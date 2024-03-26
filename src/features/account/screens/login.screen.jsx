@@ -1,5 +1,8 @@
 import React, { useContext, useState } from "react";
 
+import { ActivityIndicator } from "react-native-paper";
+
+import { theme } from "../../../infrastructure/theme";
 import {
     AccountBackground,
     AccountContainer,
@@ -16,7 +19,7 @@ import { AuthenticationContext } from "../../../services/authentication/authenti
 export const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { onLogin, error } = useContext(AuthenticationContext);
+    const { onLogin, isLoading, error } = useContext(AuthenticationContext);
 
     return (
         <AccountBackground>
@@ -38,7 +41,6 @@ export const LoginScreen = ({ navigation }) => {
                         textContentType="password"
                         secureTextEntry
                         autoCapitalize="none"
-                        secure
                         onChangeText={(p) => setPassword(p)}
                     ></AuthInput>
                 </Spacer>
@@ -48,15 +50,22 @@ export const LoginScreen = ({ navigation }) => {
                     </ErrorContainer>
                 )}
                 <Spacer size="large">
-                    <AuthButton
-                        icon="lock-open-outline"
-                        mode="contained"
-                        onPress={() => {
-                            onLogin(email, password);
-                        }}
-                    >
-                        Login
-                    </AuthButton>
+                    {!isLoading ? (
+                        <AuthButton
+                            icon="lock-open-outline"
+                            mode="contained"
+                            onPress={() => {
+                                onLogin(email, password);
+                            }}
+                        >
+                            Login
+                        </AuthButton>
+                    ) : (
+                        <ActivityIndicator
+                            animating={true}
+                            color={theme.colors.brand.primary}
+                        />
+                    )}
                 </Spacer>
             </AccountContainer>
             <Spacer size="large">

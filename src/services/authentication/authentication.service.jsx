@@ -1,5 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+    createUserWithEmailAndPassword,
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+} from "firebase/auth";
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -14,6 +20,19 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 
 const auth = getAuth(firebase);
+export const logOutRequest = () => signOut(auth);
+export const checkSession = (setSessionUser, setIsLoading) =>
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            setSessionUser(user);
+            setIsLoading(false);
+        } else {
+            setIsLoading(false);
+        }
+    });
 
 export const loginRequest = (email, password) =>
     signInWithEmailAndPassword(auth, email, password);
+
+export const registerRequest = (email, password) =>
+    createUserWithEmailAndPassword(auth, email, password);
